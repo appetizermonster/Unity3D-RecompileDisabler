@@ -12,8 +12,9 @@ Disable Recompiling on Play Mode for Unity3D.
 Currently, it only supports Unity 5 for Windows Editor.
 
 ## How to use?
-- Install the package
-- Done
+- Download the package [v0.0.1 package](https://github.com/appetizermonster/Unity3D-RecompileDisabler/raw/master/RecompileDisabler-v0.0.1.unitypackage)
+- Install it.
+- Done.
 
 ## How it works?
 - Easy. it just rename mono compiler on play mode.
