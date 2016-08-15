@@ -39,13 +39,36 @@ namespace RecompileDisabler {
 				return;
 
 			DisableRecompile(true);
+			WatchCompiling();
+		}
+
+		private static bool reimportScriptsAfterPlay_ = false;
+
+		private static void WatchCompiling () {
+			EditorApplication.update += () => {
+				if (EditorApplication.isCompiling)
+					reimportScriptsAfterPlay_ = true;
+			};
 		}
 
 		private static void RestoreRecompile () {
 			// for safe, it always restores compiler
 			var success = DisableRecompile(false);
-			if (success)
-				AssetDatabase.Refresh();
+			if (success && reimportScriptsAfterPlay_)
+				ReimportScripts();
+		}
+
+		private static void ReimportScripts () {
+			var scripts = AssetDatabase.FindAssets("RecompileDisablerHelper");
+			if (scripts == null || scripts.Length == 0) {
+				Debug.LogWarning("RecompileDisabler: Can't find a RecompileDisablerHelper");
+				return;
+			}
+
+			var scriptPath = AssetDatabase.GUIDToAssetPath(scripts[0]);
+
+			Debug.Log("RecompileDisabler: Try to reimport scripts");
+			AssetDatabase.ImportAsset(scriptPath);
 		}
 
 		/// <returns>true if file has moved</returns>
@@ -75,7 +98,7 @@ namespace RecompileDisabler {
 		private static string GetMonoLibDirectory () {
 			if (monoLibDirectory_ != null)
 				return monoLibDirectory_;
-			
+
 			var unityEngineAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault((x) => {
 				return (x != null) && x.FullName.Contains("UnityEngine,");
 			});
