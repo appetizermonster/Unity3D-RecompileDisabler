@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Diag = System.Diagnostics;
 
 namespace RecompileDisabler {
 
@@ -38,11 +38,6 @@ namespace RecompileDisabler {
 			if (!execDisableRecompile)
 				return;
 
-			if (Application.platform != RuntimePlatform.WindowsEditor) {
-				Debug.LogWarning("Currently, Recompile Disabler only supports Windows Editor");
-				return;
-			}
-
 			DisableRecompile(true);
 		}
 
@@ -69,16 +64,28 @@ namespace RecompileDisabler {
 				}
 			} catch (Exception ex) {
 				Debug.LogWarning(ex.Message);
-				Debug.LogWarning("Please see this file if you have some problem: " + oldPath);
+				Debug.LogWarning("RecompileDisabler: Please see this file if you have some problem: " + oldPath);
 			}
 
 			return fileHasMoved;
 		}
 
+		private static string monoLibDirectory_ = null;
+
 		private static string GetMonoLibDirectory () {
-			var procPath = Diag.Process.GetCurrentProcess().MainModule.FileName;
-			var editorPath = Path.GetDirectoryName(procPath);
-			return Path.GetFullPath(editorPath + "./Data/Mono/lib/mono/2.0");
+			if (monoLibDirectory_ != null)
+				return monoLibDirectory_;
+			
+			var unityEngineAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault((x) => {
+				return (x != null) && x.FullName.Contains("UnityEngine,");
+			});
+			if (unityEngineAssembly == null)
+				throw new FileNotFoundException("RecompileDisabler: Can't find a UnityEngine assembly");
+
+			var unityEngineAssemblyDir = Path.GetDirectoryName(unityEngineAssembly.Location);
+			monoLibDirectory_ = Path.GetFullPath(unityEngineAssemblyDir + "/../Mono/lib/mono/2.0");
+
+			return monoLibDirectory_;
 		}
 	}
 }
