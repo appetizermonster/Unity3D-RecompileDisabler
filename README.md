@@ -2,17 +2,17 @@
 
 Disable Recompiling on Play Mode for Unity3D.  
 
-**[Experimental Implementation!]**
+**[Experimental Implementation]**
 
 ## Features
 - Disable Recompiling on Play mode
 - but, Refreshing Other Assets will works!
 
 ## Available Platforms
-Currently, it only supports Unity 5 for Windows Editor.
+- Unity 5 for Windows, macOS
 
 ## How to use
-- Download the package [v0.0.1 package](https://github.com/appetizermonster/Unity3D-RecompileDisabler/raw/master/RecompileDisabler-v0.0.1.unitypackage)
+- Download the package [v0.0.2 package](https://github.com/appetizermonster/Unity3D-RecompileDisabler/raw/master/RecompileDisabler-v0.0.2.unitypackage)
 - Install it.
 - Done.
 
