@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -45,10 +44,13 @@ namespace RecompileDisabler {
 		private static bool reimportScriptsAfterPlay_ = false;
 
 		private static void WatchCompiling () {
-			EditorApplication.update += () => {
-				if (EditorApplication.isCompiling)
-					reimportScriptsAfterPlay_ = true;
-			};
+			Application.logMessageReceived -= WatchCompiling_OnLogMessage;
+			Application.logMessageReceived += WatchCompiling_OnLogMessage;
+		}
+
+		private static void WatchCompiling_OnLogMessage (string condition, string stackTrace, LogType type) {
+			if (condition.StartsWith("Could not start compilationApplicationException"))
+				reimportScriptsAfterPlay_ = true;
 		}
 
 		private static void RestoreRecompile () {
