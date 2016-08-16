@@ -12,7 +12,7 @@ Disable Recompiling on Play Mode for Unity3D.
 - Unity 5 for Windows, macOS
 
 ## How to use
-- Download the package [v0.0.2 package](https://github.com/appetizermonster/Unity3D-RecompileDisabler/raw/master/RecompileDisabler-v0.0.2.unitypackage)
+- Download the package [v0.0.3 package](https://github.com/appetizermonster/Unity3D-RecompileDisabler/raw/master/Packages/RecompileDisabler-v0.0.3.unitypackage)
 - Install it.
 - Done.
 
