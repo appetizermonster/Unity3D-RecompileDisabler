@@ -39,8 +39,11 @@ namespace RecompileDisabler {
 
 			DisableRecompile(true);
 			WatchCompiling();
+
+			compilerDisabled_ = true;
 		}
 
+		private static bool compilerDisabled_ = false;
 		private static bool reimportScriptsAfterPlay_ = false;
 
 		private static void WatchCompiling () {
@@ -61,16 +64,35 @@ namespace RecompileDisabler {
 		}
 
 		private static void ReimportScripts () {
-			var scripts = AssetDatabase.FindAssets("RecompileDisablerHelper");
+			var scripts = AssetDatabase.FindAssets("t:MonoScript");
 			if (scripts == null || scripts.Length == 0) {
-				Debug.LogWarning("RecompileDisabler: Can't find a RecompileDisablerHelper");
+				Debug.LogWarning("RecompileDisabler: Can't find any script");
 				return;
 			}
 
-			var scriptPath = AssetDatabase.GUIDToAssetPath(scripts[0]);
+			EditorApplication.delayCall += () => {
+				Debug.Log("RecompileDisabler: Try to reimport scripts");
 
-			Debug.Log("RecompileDisabler: Try to reimport scripts");
-			AssetDatabase.ImportAsset(scriptPath);
+				var scriptPath = AssetDatabase.GUIDToAssetPath(scripts[0]);
+				AssetDatabase.ImportAsset(scriptPath);
+			};
+		}
+
+		/// <summary>
+		/// Execute any action that uses mono compiler internally, temporally
+		/// </summary>
+		public static void ExecuteActionWithCompiler (Action action) {
+			if (action == null)
+				return;
+
+			if (!compilerDisabled_) {
+				action();
+				return;
+			}
+
+			DisableRecompile(false);
+			action();
+			DisableRecompile(true);
 		}
 
 		/// <returns>true if file has moved</returns>
