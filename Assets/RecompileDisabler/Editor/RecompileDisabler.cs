@@ -52,7 +52,7 @@ namespace RecompileDisabler {
 		}
 
 		private static void WatchCompiling_OnLogMessage (string condition, string stackTrace, LogType type) {
-			if (condition.StartsWith("Could not start compilationApplicationException"))
+			if (condition.StartsWith("Could not start compilation"))
 				reimportScriptsAfterPlay_ = true;
 		}
 
@@ -64,22 +64,35 @@ namespace RecompileDisabler {
 		}
 
 		private static void ReimportScripts () {
-			var scripts = AssetDatabase.FindAssets("t:MonoScript");
-			if (scripts == null || scripts.Length == 0) {
-				Debug.LogWarning("RecompileDisabler: Can't find any script");
-				return;
-			}
-
 			EditorApplication.delayCall += () => {
 				Debug.Log("RecompileDisabler: Try to reimport scripts");
-
-				var scriptPath = AssetDatabase.GUIDToAssetPath(scripts[0]);
-				AssetDatabase.ImportAsset(scriptPath);
+				ReimportRandomScript(null);
+				ReimportRandomScript("Assets/Standard Assets");
+				ReimportRandomScript("Assets/Plugins");
+				ReimportRandomScript("Assets/Pro Standard Assets");
 			};
 		}
 
+		private static void ReimportRandomScript (string targetFolder) {
+			if (targetFolder != null && !AssetDatabase.IsValidFolder(targetFolder))
+				return;
+
+			string[] scripts;
+			if (targetFolder == null)
+				scripts = AssetDatabase.FindAssets("t:MonoScript");
+			else
+				scripts = AssetDatabase.FindAssets("t:MonoScript", new string[] { targetFolder });
+
+			if (scripts == null || scripts.Length == 0)
+				return;
+
+			var scriptPath = AssetDatabase.GUIDToAssetPath(scripts[0]);
+			Debug.Log("RecompileDisabler: Reimporting: " + (targetFolder ?? "Default Scripts"));
+			AssetDatabase.ImportAsset(scriptPath);
+		}
+
 		/// <summary>
-		/// Execute any action that uses mono compiler internally, temporally
+		/// Execute any action that uses mono compiler internally
 		/// </summary>
 		public static void ExecuteActionWithCompiler (Action action) {
 			if (action == null)
