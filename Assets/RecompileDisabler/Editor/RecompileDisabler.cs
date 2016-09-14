@@ -87,7 +87,7 @@ namespace RecompileDisabler {
 				return;
 
 			var scriptPath = AssetDatabase.GUIDToAssetPath(scripts[0]);
-			Debug.Log("RecompileDisabler: Reimporting: " + (targetFolder ?? "Default Scripts"));
+			Debug.Log("RecompileDisabler: Reimporting: " + targetFolder ?? "Default Scripts");
 			AssetDatabase.ImportAsset(scriptPath);
 		}
 
